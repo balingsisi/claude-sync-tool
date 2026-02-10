@@ -1,0 +1,26 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+coverage/
+.vscode/
+.idea/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Environment
+.env
+.env.local
+.env.*.local

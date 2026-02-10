@@ -1,0 +1,49 @@
+# claude-sync ignore file
+# Files matching these patterns will never be synchronized
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Keys and secrets
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+*.tgz
+
+# Node modules (in case they're in your Claude dir)
+node_modules/
+
+# Any custom patterns below
+# *.secret
+# private/
