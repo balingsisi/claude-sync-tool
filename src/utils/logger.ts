@@ -3,6 +3,7 @@
  */
 
 import chalk from 'chalk';
+import ora from 'ora';
 
 export enum LogLevel {
   DEBUG = 0,
@@ -122,7 +123,6 @@ export function separator(): void {
  * Create a progress spinner (requires ora)
  */
 export function spinner(text: string) {
-  const ora = require('ora');
   return ora({
     text,
     color: 'cyan',

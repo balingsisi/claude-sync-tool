@@ -40,8 +40,8 @@ export class SyncEngine {
       ensureDir(paths.syncHome);
       ensureDir(paths.backupDir);
 
-      // Check if repo already exists
-      const repoExists = await this.git.repoExists();
+      // Check if repo already exists by checking if directory exists
+      const repoExists = fs.existsSync(paths.syncRepoDir);
 
       if (repoExists) {
         spin.warn('Repository already initialized');

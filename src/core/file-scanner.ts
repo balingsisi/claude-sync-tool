@@ -102,6 +102,7 @@ export class FileScanner {
       path.join(skillsPath, '**/*.json'),
       path.join(skillsPath, '**/*.js'),
       path.join(skillsPath, '**/*.ts'),
+      path.join(skillsPath, '**/*.md'),  // Claude skill files
     ];
 
     const files = await this.globFiles(patterns);
@@ -123,6 +124,7 @@ export class FileScanner {
       path.join(pluginsPath, '**/*.json'),
       path.join(pluginsPath, '**/*.js'),
       path.join(pluginsPath, '**/*.ts'),
+      path.join(pluginsPath, '**/*.md'),  // Plugin documentation
     ];
 
     const files = await this.globFiles(patterns);

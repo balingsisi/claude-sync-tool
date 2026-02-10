@@ -10,13 +10,34 @@ import { getClaudePaths, ensureDir } from '../utils/helpers.js';
 import { error, debug } from '../utils/logger.js';
 
 export class GitManager {
-  private git: SimpleGit;
+  private git: SimpleGit | null = null;
   private repoPath: string;
 
   constructor(repoPath?: string) {
     const paths = getClaudePaths();
     this.repoPath = repoPath || paths.syncRepoDir;
-    this.git = simpleGit({ baseDir: this.repoPath });
+
+    // Only initialize simple-git if directory exists
+    if (fs.existsSync(this.repoPath)) {
+      this.git = simpleGit({ baseDir: this.repoPath });
+    }
+  }
+
+  /**
+   * Ensure git instance is initialized
+   */
+  private ensureGit(): SimpleGit {
+    if (!this.git) {
+      this.git = simpleGit({ baseDir: this.repoPath });
+    }
+    return this.git;
+  }
+
+  /**
+   * Get git instance (initializes if needed)
+   */
+  private getGit(): SimpleGit {
+    return this.git || this.ensureGit();
   }
 
   /**
@@ -25,7 +46,7 @@ export class GitManager {
   async init(): Promise<boolean> {
     try {
       ensureDir(this.repoPath);
-      await this.git.init();
+      await this.getGit().init();
       debug('Git repository initialized at', this.repoPath);
       return true;
     } catch (err) {
@@ -48,8 +69,13 @@ export class GitManager {
       }
 
       const cloneArgs = branch ? ['--branch', branch] : [];
-      await this.git.clone(repoUrl, this.repoPath, cloneArgs);
+      // Use simple-git without baseDir for cloning
+      const git = simpleGit();
+      await git.clone(repoUrl, this.repoPath, cloneArgs);
       debug('Cloned repository from', repoUrl);
+
+      // Initialize git instance after cloning
+      this.git = simpleGit({ baseDir: this.repoPath });
       return true;
     } catch (err) {
       error('Failed to clone repository:', err);
@@ -62,7 +88,7 @@ export class GitManager {
    */
   async addRemote(name: string, url: string): Promise<boolean> {
     try {
-      await this.git.addRemote(name, url);
+      await this.getGit().addRemote(name, url);
       debug(`Added remote '${name}' -> ${url}`);
       return true;
     } catch (err) {
@@ -76,7 +102,7 @@ export class GitManager {
    */
   async setRemoteUrl(name: string, url: string): Promise<boolean> {
     try {
-      await this.git.remote(['set-url', name, url]);
+      await this.getGit().remote(['set-url', name, url]);
       debug(`Set remote '${name}' -> ${url}`);
       return true;
     } catch (err) {
@@ -90,7 +116,7 @@ export class GitManager {
    */
   async fetch(remote: string = 'origin'): Promise<boolean> {
     try {
-      await this.git.fetch(remote);
+      await this.getGit().fetch(remote);
       debug(`Fetched from '${remote}'`);
       return true;
     } catch (err) {
@@ -105,7 +131,7 @@ export class GitManager {
   async pull(remote: string = 'origin', branch?: string): Promise<boolean> {
     try {
       const pullArgs = branch ? [`${remote}/${branch}`] : [];
-      await this.git.pull(remote, branch, pullArgs);
+      await this.getGit().pull(remote, branch, pullArgs);
       debug(`Pulled from '${remote}${branch ? '/' + branch : ''}'`);
       return true;
     } catch (err) {
@@ -119,7 +145,7 @@ export class GitManager {
    */
   async push(remote: string = 'origin', branch?: string): Promise<boolean> {
     try {
-      await this.git.push(remote, branch);
+      await this.getGit().push(remote, branch);
       debug(`Pushed to '${remote}${branch ? '/' + branch : ''}'`);
       return true;
     } catch (err) {
@@ -133,7 +159,7 @@ export class GitManager {
    */
   async add(files: string | string[]): Promise<boolean> {
     try {
-      await this.git.add(files);
+      await this.getGit().add(files);
       debug('Staged files:', files);
       return true;
     } catch (err) {
@@ -147,7 +173,7 @@ export class GitManager {
    */
   async commit(message: string): Promise<string | null> {
     try {
-      const result = await this.git.commit(message);
+      const result = await this.getGit().commit(message);
       debug('Committed changes:', message);
       return result.commit || null;
     } catch (err) {
@@ -161,7 +187,7 @@ export class GitManager {
    */
   async status(): Promise<any> {
     try {
-      const statusResult = await this.git.status();
+      const statusResult = await this.getGit().status();
       return statusResult;
     } catch (err) {
       error('Failed to get status:', err);
@@ -174,7 +200,7 @@ export class GitManager {
    */
   async getCurrentBranch(): Promise<string> {
     try {
-      const branches = await this.git.branch();
+      const branches = await this.getGit().branch();
       return branches.current || 'main';
     } catch (err) {
       error('Failed to get current branch:', err);
@@ -188,9 +214,9 @@ export class GitManager {
   async checkout(branch: string, createBranch = false): Promise<boolean> {
     try {
       if (createBranch) {
-        await this.git.checkoutLocalBranch(branch);
+        await this.getGit().checkoutLocalBranch(branch);
       } else {
-        await this.git.checkout(branch);
+        await this.getGit().checkout(branch);
       }
       debug(`Checked out branch: ${branch}`);
       return true;
@@ -205,7 +231,7 @@ export class GitManager {
    */
   async log(maxCount: number = 10): Promise<GitCommitInfo[]> {
     try {
-      const logResult = await this.git.log({ maxCount });
+      const logResult = await this.getGit().log({ maxCount });
       return logResult.all.map(commit => ({
         hash: commit.hash,
         author: commit.author_name,
@@ -224,9 +250,9 @@ export class GitManager {
   async diff(file?: string): Promise<string> {
     try {
       if (file) {
-        return await this.git.diff([file]);
+        return await this.getGit().diff([file]);
       }
-      return await this.git.diff();
+      return await this.getGit().diff();
     } catch (err) {
       error('Failed to get diff:', err);
       return '';
@@ -239,9 +265,9 @@ export class GitManager {
   async reset(commit: string, hard = false): Promise<boolean> {
     try {
       if (hard) {
-        await this.git.reset(['--hard', commit]);
+        await this.getGit().reset(['--hard', commit]);
       } else {
-        await this.git.reset(['--soft', commit]);
+        await this.getGit().reset(['--soft', commit]);
       }
       debug(`Reset to ${commit}`);
       return true;
@@ -256,7 +282,7 @@ export class GitManager {
    */
   async repoExists(): Promise<boolean> {
     try {
-      await this.git.status();
+      await this.getGit().status();
       return true;
     } catch {
       return false;
@@ -268,7 +294,7 @@ export class GitManager {
    */
   async getCurrentCommit(): Promise<string | null> {
     try {
-      const logResult = await this.git.log({ maxCount: 1 });
+      const logResult = await this.getGit().log({ maxCount: 1 });
       return logResult.latest?.hash || null;
     } catch {
       return null;
@@ -281,7 +307,7 @@ export class GitManager {
   async getRemoteCommit(remote: string = 'origin', branch?: string): Promise<string | null> {
     try {
       const targetBranch = branch || (await this.getCurrentBranch());
-      const result = await this.git.remote(['show', remote]);
+      const result = await this.getGit().remote(['show', remote]);
       // Parse the output to get the remote commit
       if (typeof result === 'string') {
         const match = result.match(/HEAD branch:\s+(\S+)/m);
@@ -298,7 +324,7 @@ export class GitManager {
    */
   async getChangedFiles(from: string, to: string): Promise<string[]> {
     try {
-      const diffResult = await this.git.diff([`${from}..${to}`, '--name-only']);
+      const diffResult = await this.getGit().diff([`${from}..${to}`, '--name-only']);
       return diffResult.split('\n').filter(f => f.trim());
     } catch {
       return [];
@@ -310,7 +336,7 @@ export class GitManager {
    */
   async isIgnored(file: string): Promise<boolean> {
     try {
-      await this.git.checkIgnore(file);
+      await this.getGit().checkIgnore(file);
       return true;
     } catch {
       return false;
@@ -322,7 +348,7 @@ export class GitManager {
    */
   async addAll(): Promise<boolean> {
     try {
-      await this.git.add('./*');
+      await this.getGit().add('./*');
       debug('Staged all changes');
       return true;
     } catch (err) {
@@ -336,7 +362,7 @@ export class GitManager {
    */
   async hasChanges(): Promise<boolean> {
     try {
-      const statusResult = await this.git.status();
+      const statusResult = await this.getGit().status();
       return statusResult.files.length > 0;
     } catch {
       return false;
@@ -348,7 +374,7 @@ export class GitManager {
    */
   async createBranch(branchName: string): Promise<boolean> {
     try {
-      await this.git.checkoutLocalBranch(branchName);
+      await this.getGit().checkoutLocalBranch(branchName);
       debug(`Created branch: ${branchName}`);
       return true;
     } catch (err) {
@@ -362,7 +388,7 @@ export class GitManager {
    */
   async deleteBranch(branchName: string, force = false): Promise<boolean> {
     try {
-      await this.git.deleteLocalBranch(branchName, force);
+      await this.getGit().deleteLocalBranch(branchName, force);
       debug(`Deleted branch: ${branchName}`);
       return true;
     } catch (err) {
@@ -376,7 +402,7 @@ export class GitManager {
    */
   async listBranches(): Promise<string[]> {
     try {
-      const branches = await this.git.branch();
+      const branches = await this.getGit().branch();
       return branches.all;
     } catch {
       return [];
