@@ -130,8 +130,23 @@ export class GitManager {
    */
   async pull(remote: string = 'origin', branch?: string): Promise<boolean> {
     try {
-      const pullArgs = branch ? [`${remote}/${branch}`] : [];
-      await this.getGit().pull(remote, branch, pullArgs);
+      // First fetch to get latest remote info
+      await this.fetch(remote);
+
+      if (branch) {
+        // Check if remote branch exists
+        const branches = await this.getGit().branch(['-r']);
+        const remoteBranch = `${remote}/${branch}`;
+
+        if (!branches.all.includes(remoteBranch)) {
+          error(`Remote branch '${branch}' not found. Available branches:`, branches.all);
+          return false;
+        }
+
+        await this.getGit().pull(remote, branch);
+      } else {
+        await this.getGit().pull();
+      }
       debug(`Pulled from '${remote}${branch ? '/' + branch : ''}'`);
       return true;
     } catch (err) {
