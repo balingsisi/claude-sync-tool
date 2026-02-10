@@ -1,4 +1,4 @@
-# claude-sync
+# claude-config-sync
 
 > Synchronize Claude Code configuration across multiple terminal environments
 
@@ -8,7 +8,7 @@ When using Claude Code on multiple machines or terminals, keeping your configura
 
 ## Solution
 
-`claude-sync` uses Git to version control and synchronize your Claude Code configuration across all your environments. Push your configuration to a private repository, pull it on any machine, and never set up twice.
+`claude-config-sync` uses Git to version control and synchronize your Claude Code configuration across all your environments. Push your configuration to a private repository, pull it on any machine, and never set up twice.
 
 ## Features
 
@@ -22,14 +22,14 @@ When using Claude Code on multiple machines or terminals, keeping your configura
 ## Installation
 
 ```bash
-npm install -g claude-sync
+npm install -g claude-config-sync
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/user/claude-sync
-cd claude-sync
+git clone https://github.com/user/claude-config-sync
+cd claude-config-sync
 npm install
 npm run build
 npm link
@@ -39,21 +39,21 @@ npm link
 
 ```bash
 # Initialize sync
-claude-sync init
+claude-config-sync init
 
 # Push your configuration
-claude-sync push
+claude-config-sync push
 
 # On another machine, pull configuration
-claude-sync pull
+claude-config-sync pull
 
 # Check status
-claude-sync status
+claude-config-sync status
 ```
 
 ## Configuration
 
-Configuration is stored in `~/.claude-sync/config.json`:
+Configuration is stored in `~/.claude-config-sync/config.json`:
 
 ```json
 {
@@ -81,7 +81,7 @@ Configuration is stored in `~/.claude-sync/config.json`:
 ### Initialization
 
 ```bash
-claude-sync init [--repo <url>] [--branch <name>]
+claude-config-sync init [--repo <url>] [--branch <name>]
 ```
 
 Initialize sync configuration. If no repository URL is provided, you'll be guided through interactive setup.
@@ -89,7 +89,7 @@ Initialize sync configuration. If no repository URL is provided, you'll be guide
 ### Push
 
 ```bash
-claude-sync push [--dry-run] [--force]
+claude-config-sync push [--dry-run] [--force]
 ```
 
 Push local configuration changes to the remote repository.
@@ -97,7 +97,7 @@ Push local configuration changes to the remote repository.
 ### Pull
 
 ```bash
-claude-sync pull [--dry-run] [--force]
+claude-config-sync pull [--dry-run] [--force]
 ```
 
 Pull configuration changes from the remote repository.
@@ -105,7 +105,7 @@ Pull configuration changes from the remote repository.
 ### Sync
 
 ```bash
-claude-sync sync [--dry-run]
+claude-config-sync sync [--dry-run]
 ```
 
 Perform bidirectional synchronization (pull then push).
@@ -113,7 +113,7 @@ Perform bidirectional synchronization (pull then push).
 ### Status
 
 ```bash
-claude-sync status [--verbose]
+claude-config-sync status [--verbose]
 ```
 
 Show current synchronization status including:
@@ -126,20 +126,20 @@ Show current synchronization status including:
 ### Config
 
 ```bash
-claude-sync config list                    # List all configuration
-claude-sync config get <path>              # Get specific value
-claude-sync config set <path> <value>      # Set a value
-claude-sync config exclude <pattern>       # Add exclude pattern
-claude-sync config include <pattern>       # Remove exclude pattern
-claude-sync config edit                    # Interactive config editor
+claude-config-sync config list                    # List all configuration
+claude-config-sync config get <path>              # Get specific value
+claude-config-sync config set <path> <value>      # Set a value
+claude-config-sync config exclude <pattern>       # Add exclude pattern
+claude-config-sync config include <pattern>       # Remove exclude pattern
+claude-config-sync config edit                    # Interactive config editor
 ```
 
 ### Watch
 
 ```bash
-claude-sync watch start [--delay <ms>]     # Start watching for changes
-claude-sync watch stop                     # Stop watching
-claude-sync watch status                   # Show watcher status
+claude-config-sync watch start [--delay <ms>]     # Start watching for changes
+claude-config-sync watch stop                     # Stop watching
+claude-config-sync watch status                   # Show watcher status
 ```
 
 Monitor files for changes and automatically sync. Uses chokidar for efficient file watching with debouncing.
@@ -147,16 +147,16 @@ Monitor files for changes and automatically sync. Uses chokidar for efficient fi
 ### Backup
 
 ```bash
-claude-sync backup create                  # Create a backup
-claude-sync backup list [--verbose]        # List backups
-claude-sync backup restore <backup>        # Restore from backup
-claude-sync backup delete <backup>         # Delete a backup
-claude-sync backup clean [--keep <n>]      # Remove old backups
+claude-config-sync backup create                  # Create a backup
+claude-config-sync backup list [--verbose]        # List backups
+claude-config-sync backup restore <backup>        # Restore from backup
+claude-config-sync backup delete <backup>         # Delete a backup
+claude-config-sync backup clean [--keep <n>]      # Remove old backups
 ```
 
 ## What Gets Synchronized
 
-By default, `claude-sync` synchronizes:
+By default, `claude-config-sync` synchronizes:
 
 - **skills/** - Installed skills
 - **plugins/** - Plugin configurations
@@ -169,7 +169,7 @@ Optionally, you can also sync:
 
 ## Security
 
-`claude-sync` excludes sensitive files by default:
+`claude-config-sync` excludes sensitive files by default:
 
 - `.env` files
 - `*.key` files
@@ -179,8 +179,8 @@ Optionally, you can also sync:
 You can add more exclusions:
 
 ```bash
-claude-sync config exclude "*.pem"
-claude-sync config exclude "credentials/**"
+claude-config-sync config exclude "*.pem"
+claude-config-sync config exclude "credentials/**"
 ```
 
 ## Conflict Resolution
@@ -195,7 +195,7 @@ When conflicts occur (same file modified locally and remotely), you can choose:
 Configure via:
 
 ```bash
-claude-sync config set sync.conflictStrategy newest
+claude-config-sync config set sync.conflictStrategy newest
 ```
 
 ## Directory Structure
@@ -207,7 +207,7 @@ claude-sync config set sync.conflictStrategy newest
 ├── settings.json
 └── ...
 
-~/.claude-sync/      # claude-sync data
+~/.claude-config-sync/      # claude-config-sync data
 ├── config.json      # Sync configuration
 ├── repo/            # Git repository clone
 └── backups/         # Configuration backups
@@ -220,7 +220,7 @@ claude-sync config set sync.conflictStrategy newest
 ### Initial Setup
 
 ```bash
-$ claude-sync init
+$ claude-config-sync init
 ? Git repository URL: git@github.com:user/claude-config.git
 ? Branch: main
 ? What do you want to sync?
@@ -239,15 +239,15 @@ $ claude-sync init
 
 ```bash
 # Before starting work, pull latest changes
-$ claude-sync pull
+$ claude-config-sync pull
 ✓ Pulled 3 files
 
 # After installing new skills, push changes
-$ claude-sync push
+$ claude-config-sync push
 ✓ Pushed 2 files
 
 # Check status
-$ claude-sync status
+$ claude-config-sync status
 Repository: git@github.com:user/claude-config.git
 Branch: main
 Status: Up to date with remote
@@ -261,7 +261,7 @@ Synced Items:
 
 ```bash
 # Start watching for changes
-$ claude-sync watch start
+$ claude-config-sync watch start
 Starting file watcher...
 Watching: /home/user/.claude
 Debounce delay: 5000ms
@@ -275,14 +275,14 @@ Debounce delay: 5000ms
 
 ### "Not initialized" error
 
-Run `claude-sync init` to set up synchronization.
+Run `claude-config-sync init` to set up synchronization.
 
 ### Git authentication errors
 
 Ensure your SSH keys are set up or use HTTPS URL with credentials:
 
 ```bash
-claude-sync config set sync.repository https://user:token@github.com/user/repo.git
+claude-config-sync config set sync.repository https://user:token@github.com/user/repo.git
 ```
 
 ### Merge conflicts
@@ -292,12 +292,12 @@ If conflicts occur, they'll be resolved based on your `conflictStrategy` setting
 ### Restore from backup
 
 ```bash
-$ claude-sync backup list
+$ claude-config-sync backup list
 [1] backup-2024-01-15T10:30:00.000Z
   • Date: 2024-01-15 10:30:00
   • Files: 42
 
-$ claude-sync backup restore 1
+$ claude-config-sync backup restore 1
 ✓ Backup restored successfully
 ```
 
@@ -305,8 +305,8 @@ $ claude-sync backup restore 1
 
 ```bash
 # Clone repository
-git clone https://github.com/user/claude-sync
-cd claude-sync
+git clone https://github.com/user/claude-config-sync
+cd claude-config-sync
 
 # Install dependencies
 npm install
@@ -340,8 +340,8 @@ MIT License - see LICENSE file for details.
 
 ## Support
 
-- Issues: https://github.com/user/claude-sync/issues
-- Discussions: https://github.com/user/claude-sync/discussions
+- Issues: https://github.com/user/claude-config-sync/issues
+- Discussions: https://github.com/user/claude-config-sync/discussions
 
 ---
 

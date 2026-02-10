@@ -30,7 +30,7 @@ const program = new Command();
 const VERSION = packageJson.version || '0.1.0';
 
 program
-  .name('claude-sync')
+  .name('claude-config-sync')
   .description('Synchronize Claude Code configuration across multiple environments')
   .version(VERSION)
   .option('-v, --verbose', 'enable verbose output')
@@ -64,22 +64,22 @@ registerBackupCommand(program);
 
 // Default action - show help if no command provided
 program.action(() => {
-  header('Claude Sync');
+  header('Claude Config Sync');
 
   if (!isConfigInitialized()) {
-    info('Welcome to Claude Sync!');
+    info('Welcome to Claude Config Sync!');
     info('\nTo get started, run:');
-    info('  claude-sync init');
+    info('  claude-config-sync init');
     info('\nThis will guide you through setting up synchronization.');
   } else {
-    info('Claude Sync is configured.');
+    info('Claude Config Sync is configured.');
     info('\nCommon commands:');
-    info('  claude-sync status   - Show sync status');
-    info('  claude-sync sync     - Synchronize changes');
-    info('  claude-sync push     - Push local changes');
-    info('  claude-sync pull     - Pull remote changes');
+    info('  claude-config-sync status   - Show sync status');
+    info('  claude-config-sync sync     - Synchronize changes');
+    info('  claude-config-sync push     - Push local changes');
+    info('  claude-config-sync pull     - Pull remote changes');
     info('\nFor more information:');
-    info('  claude-sync --help');
+    info('  claude-config-sync --help');
   }
 });
 

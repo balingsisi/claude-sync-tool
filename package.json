@@ -1,10 +1,10 @@
 {
-  "name": "claude-sync",
+  "name": "claude-config-sync",
   "version": "0.1.0",
   "description": "Synchronize Claude Code configuration across multiple terminal environments",
   "main": "dist/index.js",
   "bin": {
-    "claude-sync": "./dist/index.js"
+    "claude-config-sync": "./dist/index.js"
   },
   "type": "module",
   "scripts": {
@@ -21,7 +21,8 @@
     "claude-code",
     "sync",
     "configuration",
-    "cli"
+    "cli",
+    "config-sync"
   ],
   "author": "",
   "license": "MIT",

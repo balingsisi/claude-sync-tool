@@ -1,4 +1,4 @@
-# claude-sync
+# claude-config-sync
 
 > 在多个终端环境之间同步 Claude Code 配置
 
@@ -8,7 +8,7 @@
 
 ## 解决方案
 
-`claude-sync` 使用 Git 对您的 Claude Code 配置进行版本控制并在所有环境之间同步。将配置推送到私有仓库，在任何机器上拉取配置，无需重复设置。
+`claude-config-sync` 使用 Git 对您的 Claude Code 配置进行版本控制并在所有环境之间同步。将配置推送到私有仓库，在任何机器上拉取配置，无需重复设置。
 
 ## 功能特性
 
@@ -22,14 +22,14 @@
 ## 安装
 
 ```bash
-npm install -g claude-sync
+npm install -g claude-config-sync
 ```
 
 或从源码构建：
 
 ```bash
-git clone https://github.com/user/claude-sync
-cd claude-sync
+git clone https://github.com/user/claude-config-sync
+cd claude-config-sync
 npm install
 npm run build
 npm link
@@ -39,21 +39,21 @@ npm link
 
 ```bash
 # 初始化同步
-claude-sync init
+claude-config-sync init
 
 # 推送您的配置
-claude-sync push
+claude-config-sync push
 
 # 在另一台机器上，拉取配置
-claude-sync pull
+claude-config-sync pull
 
 # 查看状态
-claude-sync status
+claude-config-sync status
 ```
 
 ## 配置
 
-配置存储在 `~/.claude-sync/config.json`：
+配置存储在 `~/.claude-config-sync/config.json`：
 
 ```json
 {
@@ -81,7 +81,7 @@ claude-sync status
 ### 初始化
 
 ```bash
-claude-sync init [--repo <url>] [--branch <name>]
+claude-config-sync init [--repo <url>] [--branch <name>]
 ```
 
 初始化同步配置。如果未提供仓库 URL，将引导您完成交互式设置。
@@ -89,7 +89,7 @@ claude-sync init [--repo <url>] [--branch <name>]
 ### 推送
 
 ```bash
-claude-sync push [--dry-run] [--force]
+claude-config-sync push [--dry-run] [--force]
 ```
 
 将本地配置更改推送到远程仓库。
@@ -97,7 +97,7 @@ claude-sync push [--dry-run] [--force]
 ### 拉取
 
 ```bash
-claude-sync pull [--dry-run] [--force]
+claude-config-sync pull [--dry-run] [--force]
 ```
 
 从远程仓库拉取配置更改。
@@ -105,7 +105,7 @@ claude-sync pull [--dry-run] [--force]
 ### 同步
 
 ```bash
-claude-sync sync [--dry-run]
+claude-config-sync sync [--dry-run]
 ```
 
 执行双向同步（先拉取后推送）。
@@ -113,7 +113,7 @@ claude-sync sync [--dry-run]
 ### 状态
 
 ```bash
-claude-sync status [--verbose]
+claude-config-sync status [--verbose]
 ```
 
 显示当前同步状态，包括：
@@ -126,20 +126,20 @@ claude-sync status [--verbose]
 ### 配置
 
 ```bash
-claude-sync config list                    # 列出所有配置
-claude-sync config get <path>              # 获取特定值
-claude-sync config set <path> <value>      # 设置值
-claude-sync config exclude <pattern>       # 添加排除模式
-claude-sync config include <pattern>       # 移除排除模式
-claude-sync config edit                    # 交互式配置编辑器
+claude-config-sync config list                    # 列出所有配置
+claude-config-sync config get <path>              # 获取特定值
+claude-config-sync config set <path> <value>      # 设置值
+claude-config-sync config exclude <pattern>       # 添加排除模式
+claude-config-sync config include <pattern>       # 移除排除模式
+claude-config-sync config edit                    # 交互式配置编辑器
 ```
 
 ### 监听
 
 ```bash
-claude-sync watch start [--delay <ms>]     # 开始监听文件更改
-claude-sync watch stop                     # 停止监听
-claude-sync watch status                   # 显示监听状态
+claude-config-sync watch start [--delay <ms>]     # 开始监听文件更改
+claude-config-sync watch stop                     # 停止监听
+claude-config-sync watch status                   # 显示监听状态
 ```
 
 监听文件更改并自动同步。使用 chokidar 进行高效文件监听和防抖处理。
@@ -147,16 +147,16 @@ claude-sync watch status                   # 显示监听状态
 ### 备份
 
 ```bash
-claude-sync backup create                  # 创建备份
-claude-sync backup list [--verbose]        # 列出备份
-claude-sync backup restore <backup>        # 从备份恢复
-claude-sync backup delete <backup>         # 删除备份
-claude-sync backup clean [--keep <n>]      # 清理旧备份
+claude-config-sync backup create                  # 创建备份
+claude-config-sync backup list [--verbose]        # 列出备份
+claude-config-sync backup restore <backup>        # 从备份恢复
+claude-config-sync backup delete <backup>         # 删除备份
+claude-config-sync backup clean [--keep <n>]      # 清理旧备份
 ```
 
 ## 同步内容
 
-默认情况下，`claude-sync` 同步：
+默认情况下，`claude-config-sync` 同步：
 
 - **skills/** - 已安装的技能
 - **plugins/** - 插件配置
@@ -169,7 +169,7 @@ claude-sync backup clean [--keep <n>]      # 清理旧备份
 
 ## 安全性
 
-`claude-sync` 默认排除敏感文件：
+`claude-config-sync` 默认排除敏感文件：
 
 - `.env` 文件
 - `*.key` 文件
@@ -179,8 +179,8 @@ claude-sync backup clean [--keep <n>]      # 清理旧备份
 您可以添加更多排除规则：
 
 ```bash
-claude-sync config exclude "*.pem"
-claude-sync config exclude "credentials/**"
+claude-config-sync config exclude "*.pem"
+claude-config-sync config exclude "credentials/**"
 ```
 
 ## 冲突解决
@@ -195,7 +195,7 @@ claude-sync config exclude "credentials/**"
 通过以下命令配置：
 
 ```bash
-claude-sync config set sync.conflictStrategy newest
+claude-config-sync config set sync.conflictStrategy newest
 ```
 
 ## 目录结构
@@ -207,7 +207,7 @@ claude-sync config set sync.conflictStrategy newest
 ├── settings.json
 └── ...
 
-~/.claude-sync/      # claude-sync 数据
+~/.claude-config-sync/      # claude-config-sync 数据
 ├── config.json      # 同步配置
 ├── repo/            # Git 仓库克隆
 └── backups/         # 配置备份
@@ -220,7 +220,7 @@ claude-sync config set sync.conflictStrategy newest
 ### 初始设置
 
 ```bash
-$ claude-sync init
+$ claude-config-sync init
 ? Git 仓库 URL: git@github.com:user/claude-config.git
 ? 分支名称: main
 ? 您想要同步什么内容？
@@ -239,15 +239,15 @@ $ claude-sync init
 
 ```bash
 # 开始工作前，拉取最新更改
-$ claude-sync pull
+$ claude-config-sync pull
 ✓ 已拉取 3 个文件
 
 # 安装新技能后，推送更改
-$ claude-sync push
+$ claude-config-sync push
 ✓ 已推送 2 个文件
 
 # 查看状态
-$ claude-sync status
+$ claude-config-sync status
 仓库: git@github.com:user/claude-config.git
 分支: main
 状态: 与远程同步
@@ -261,7 +261,7 @@ $ claude-sync status
 
 ```bash
 # 开始监听文件更改
-$ claude-sync watch start
+$ claude-config-sync watch start
 正在启动文件监听器...
 监听路径: /home/user/.claude
 防抖延迟: 5000ms
@@ -275,14 +275,14 @@ $ claude-sync watch start
 
 ### "Not initialized" 错误
 
-运行 `claude-sync init` 设置同步。
+运行 `claude-config-sync init` 设置同步。
 
 ### Git 认证错误
 
 确保您的 SSH 密钥已设置或使用带凭据的 HTTPS URL：
 
 ```bash
-claude-sync config set sync.repository https://user:token@github.com/user/repo.git
+claude-config-sync config set sync.repository https://user:token@github.com/user/repo.git
 ```
 
 ### 合并冲突
@@ -292,12 +292,12 @@ claude-sync config set sync.repository https://user:token@github.com/user/repo.g
 ### 从备份恢复
 
 ```bash
-$ claude-sync backup list
+$ claude-config-sync backup list
 [1] backup-2024-01-15T10:30:00.000Z
   • 日期: 2024-01-15 10:30:00
   • 文件: 42
 
-$ claude-sync backup restore 1
+$ claude-config-sync backup restore 1
 ✓ 备份已成功恢复
 ```
 
@@ -305,8 +305,8 @@ $ claude-sync backup restore 1
 
 ```bash
 # 克隆仓库
-git clone https://github.com/user/claude-sync
-cd claude-sync
+git clone https://github.com/user/claude-config-sync
+cd claude-config-sync
 
 # 安装依赖
 npm install
@@ -337,8 +337,8 @@ MIT License - 详见 LICENSE 文件。
 
 ## 支持
 
-- 问题反馈: https://github.com/user/claude-sync/issues
-- 讨论: https://github.com/user/claude-sync/discussions
+- 问题反馈: https://github.com/user/claude-config-sync/issues
+- 讨论: https://github.com/user/claude-config-sync/discussions
 
 ---
 
