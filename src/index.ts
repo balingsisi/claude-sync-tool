@@ -15,6 +15,8 @@ import { registerStatusCommand } from './commands/status.js';
 import { registerConfigCommand } from './commands/config.js';
 import { registerWatchCommand } from './commands/watch.js';
 import { registerBackupCommand } from './commands/backup.js';
+import { registerDoctorCommand } from './commands/doctor.js';
+import { registerDiffCommand } from './commands/diff.js';
 import { setLogLevel, header, info, error } from './utils/logger.js';
 import { isConfigInitialized } from './utils/config-loader.js';
 
@@ -61,6 +63,8 @@ registerStatusCommand(program);
 registerConfigCommand(program);
 registerWatchCommand(program);
 registerBackupCommand(program);
+registerDoctorCommand(program);
+registerDiffCommand(program);
 
 // Default action - show help if no command provided
 program.action(() => {
@@ -78,6 +82,8 @@ program.action(() => {
     info('  claude-config-sync sync     - Synchronize changes');
     info('  claude-config-sync push     - Push local changes');
     info('  claude-config-sync pull     - Pull remote changes');
+    info('  claude-config-sync doctor   - Check skill health');
+    info('  claude-config-sync diff     - Show changes preview');
     info('\nFor more information:');
     info('  claude-config-sync --help');
   }

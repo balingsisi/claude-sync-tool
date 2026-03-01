@@ -14,6 +14,8 @@
 
 - 🚀 **一键同步** - 无需手动复制文件或重新安装技能
 - 🎯 **选择性同步** - 灵活选择要同步的内容类型
+- 🩺 **健康检查** - 检测技能问题，确保配置完整性
+- 👁️ **变更预览** - 同步前查看变更，避免意外覆盖
 - 🔒 **安全可靠** - 自动排除敏感文件，操作前自动备份
 - ⚡ **自动监听** - 文件变更时自动同步
 - 🛠️ **智能冲突处理** - 多种冲突解决策略
@@ -197,6 +199,81 @@ claude-config-sync status [选项]
    • backup-2024-01-14T15:20:00Z
    • backup-2024-01-13T09:10:00Z
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### 健康检查命令
+
+```bash
+claude-config-sync doctor [选项]
+```
+
+**选项：**
+- `--fix` - 尝试自动修复问题（实验性功能，即将推出）
+- `--json` - 以 JSON 格式输出结果
+- `-v, --verbose` - 显示详细信息（包括文件大小和修改时间）
+
+**功能说明：**
+检查所有已安装技能的健康状况，报告：
+- **错误（Errors）** - 损坏或缺失的技能（如缺少 SKILL.md）
+- **警告（Warnings）** - 需要注意的问题（如缺少 frontmatter、过时的技能）
+- **健康（Healthy）** - 正常配置的技能
+
+**输出示例：**
+```bash
+$ claude-config-sync doctor
+
+═══ 技能健康检查报告 ═══
+
+总技能数: 40
+✓ 健康: 32
+⚠ 警告: 8
+✗ 错误: 0
+
+警告:
+  ⚠ web-search-zai
+    • 未找到 YAML frontmatter
+    • 建议: 添加 name 和 description 字段
+
+  ⚠ old-skill
+    • 最后更新于 180 天前
+    • 建议: 检查是否有更新版本
+```
+
+### 变更预览命令
+
+```bash
+claude-config-sync diff [选项]
+```
+
+**选项：**
+- `--detailed` - 显示每个文件的详细差异
+- `--json` - 以 JSON 格式输出结果
+- `--push-only` - 仅显示将要推送的变更
+- `--pull-only` - 仅显示将要拉取的变更
+
+**功能说明：**
+在同步前预览变更，显示将要推送和拉取的内容，帮助您避免意外覆盖文件。
+
+**输出示例：**
+```bash
+$ claude-config-sync diff
+
+═══ 同步变更预览 ═══
+
+📤 将要推送 (3 个文件):
+  + skills/new-skill/              [新技能] (~12KB)
+  M skills/updated-skill/SKILL.md  [技能]
+  - skills/old-skill/              [技能]
+
+📥 将要拉取 (2 个文件):
+  M settings.json                  [设置]
+  + plugins/new-plugin.json        [插件]
+
+⚠️ 冲突: 0
+
+摘要:
+  推送: 3 (新增: 1, 修改: 1, 删除: 1)
+  拉取: 2 (新增: 1, 修改: 1)
 ```
 
 ### 配置管理命令
@@ -504,7 +581,13 @@ claude-config-sync pull
 ### 场景二：日常工作流
 
 ```bash
-# 每天开始工作前
+# 每天开始工作前，先检查技能健康
+claude-config-sync doctor
+
+# 预览即将同步的变更
+claude-config-sync diff
+
+# 拉取远程更新
 claude-config-sync pull
 
 # 安装新技能或修改配置后
@@ -512,6 +595,61 @@ claude-config-sync push
 
 # 查看同步状态
 claude-config-sync status
+```
+
+### 场景二（增强）：健康检查与变更预览
+
+```bash
+# 1. 运行健康检查
+$ claude-config-sync doctor
+
+═══ 技能健康检查报告 ═══
+
+总技能数: 40
+✓ 健康: 38
+⚠ 警告: 2
+
+警告:
+  ⚠ outdated-skill
+    • 最后更新于 180 天前
+    • 建议: 检查是否有更新版本
+
+# 2. 获取详细信息
+$ claude-config-sync doctor --verbose
+
+健康技能:
+  ✓ ai-product-strategy (更新: 2024-01-15, 大小: 15.2 KB)
+  ✓ technical-blog-writing (更新: 2024-01-10, 大小: 8.5 KB)
+  ...
+
+# 3. 导出 JSON 格式用于自动化处理
+$ claude-config-sync doctor --json > health-report.json
+
+# 4. 预览变更后再同步
+$ claude-config-sync diff
+
+═══ 同步变更预览 ═══
+
+📤 将要推送 (2 个文件):
+  + skills/new-skill/              [技能] (~12KB)
+  M settings.json                  [设置]
+
+📥 将要拉取 (1 个文件):
+  M plugins/updated-plugin.json    [插件]
+
+# 5. 查看详细变更
+$ claude-config-sync diff --detailed
+
+  + skills/new-skill/SKILL.md
+
+    差异:
+    +++ skills/new-skill/SKILL.md
+    @@ -0,0 +1,10 @@
+    +---
+    +name: new-skill
+    +description: 一个新技能
+    +---
+    +
 ```
 
 ### 场景三：在多台机器上同时工作
@@ -654,6 +792,39 @@ ssh -T git@github.com
 
 # 如果失败，重新配置 SSH
 # 参考问题 2 的解决方案
+```
+
+### 问题 7：技能同步后无法正常工作
+
+**解决方案：**
+
+使用 doctor 命令检查技能健康：
+
+```bash
+$ claude-config-sync doctor
+✗ 错误: 2
+  ✗ broken-skill
+    • 缺少 SKILL.md 文件
+
+# 通过备份恢复或重新安装技能
+$ claude-config-sync backup restore <备份-id>
+```
+
+### 问题 8：同步后发现意外的变更
+
+**解决方案：**
+
+同步前始终预览变更：
+
+```bash
+# 查看将要变更的内容
+$ claude-config-sync diff
+
+# 查看详细变更
+$ claude-config-sync diff --detailed
+
+# 仅推送或仅拉取特定变更
+$ claude-config-sync push  # 或 pull
 ```
 
 ## 🛠️ 开发指南

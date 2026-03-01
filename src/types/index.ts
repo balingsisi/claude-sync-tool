@@ -98,3 +98,41 @@ export interface BackupInfo {
   path: string;
   files: string[];
 }
+
+// Health check types
+export interface HealthCheckResult {
+  skillName: string;
+  status: 'healthy' | 'warning' | 'error';
+  issues: string[];
+  suggestions: string[];
+  lastModified?: Date;
+  fileSize?: number;
+}
+
+export interface HealthCheckSummary {
+  totalSkills: number;
+  healthy: number;
+  warnings: number;
+  errors: number;
+  skills: HealthCheckResult[];
+}
+
+// Diff types
+export interface ChangeDetail {
+  path: string;
+  status: 'added' | 'modified' | 'deleted' | 'renamed';
+  type: 'skill' | 'plugin' | 'setting' | 'project' | 'history' | 'custom';
+  size?: number;
+  diff?: string;
+}
+
+export interface DiffSummary {
+  pushChanges: ChangeDetail[];
+  pullChanges: ChangeDetail[];
+  conflicts: string[];
+  stats: {
+    toAdd: number;
+    toModify: number;
+    toDelete: number;
+  };
+}
